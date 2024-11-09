@@ -1,0 +1,183 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_PATIENTS 100
+#define NAME_LENGTH 100
+
+// Structure to store patient details
+typedef struct {
+    int patient_id;
+    char name[NAME_LENGTH];
+    int age;
+    char gender;
+    char disease[NAME_LENGTH];
+    char contact[15];
+} Patient;
+
+// Function declarations
+void addPatient(Patient patients[], int *count);
+void displayPatients(Patient patients[], int count);
+void updatePatient(Patient patients[], int count);
+void deletePatient(Patient patients[], int *count);
+void displayMenu();
+
+int main() {
+    Patient patients[MAX_PATIENTS];
+    int count = 0;  // Number of patients
+    int choice;
+
+    while(1) {
+        displayMenu();
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        getchar();  // Clear newline character from input buffer
+
+        switch(choice) {
+            case 1:
+                addPatient(patients, &count);
+                break;
+            case 2:
+                displayPatients(patients, count);
+                break;
+            case 3:
+                updatePatient(patients, count);
+                break;
+            case 4:
+                deletePatient(patients, &count);
+                break;
+            case 5:
+                printf("Exiting the system...\n");
+                exit(0);
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
+
+void displayMenu() {
+    printf("\n----- Hospital Patient Management System -----\n");
+    printf("1. Add new patient\n");
+    printf("2. Display all patients\n");
+    printf("3. Update patient details\n");
+    printf("4. Delete patient\n");
+    printf("5. Exit\n");
+}
+
+void addPatient(Patient patients[], int *count) {
+    if (*count >= MAX_PATIENTS) {
+        printf("Cannot add more patients. Patient list is full.\n");
+        return;
+    }
+
+    Patient new_patient;
+    new_patient.patient_id = *count + 1;
+
+    printf("Enter patient name: ");
+    fgets(new_patient.name, NAME_LENGTH, stdin);
+    new_patient.name[strcspn(new_patient.name, "\n")] = '\0'; // Remove newline
+
+    printf("Enter age: ");
+    scanf("%d", &new_patient.age);
+    getchar();  // Clear newline character from input buffer
+
+    printf("Enter gender (M/F): ");
+    scanf("%c", &new_patient.gender);
+    getchar();  // Clear newline character
+
+    printf("Enter disease: ");
+    fgets(new_patient.disease, NAME_LENGTH, stdin);
+    new_patient.disease[strcspn(new_patient.disease, "\n")] = '\0'; // Remove newline
+
+    printf("Enter contact number: ");
+    fgets(new_patient.contact, 15, stdin);
+    new_patient.contact[strcspn(new_patient.contact, "\n")] = '\0'; // Remove newline
+
+    patients[*count] = new_patient;
+    (*count)++;
+    printf("Patient added successfully.\n");
+}
+
+void displayPatients(Patient patients[], int count) {
+    if (count == 0) {
+        printf("No patients to display.\n");
+        return;
+    }
+
+    printf("\nPatient Details:\n");
+    for (int i = 0; i < count; i++) {
+        printf("Patient ID: %d\n", patients[i].patient_id);
+        printf("Name: %s\n", patients[i].name);
+        printf("Age: %d\n", patients[i].age);
+        printf("Gender: %c\n", patients[i].gender);
+        printf("Disease: %s\n", patients[i].disease);
+        printf("Contact: %s\n\n", patients[i].contact);
+    }
+}
+
+void updatePatient(Patient patients[], int count) {
+    int patient_id, found = 0;
+
+    printf("Enter patient ID to update: ");
+    scanf("%d", &patient_id);
+    getchar();  // Clear newline character from input buffer
+
+    for (int i = 0; i < count; i++) {
+        if (patients[i].patient_id == patient_id) {
+            found = 1;
+            printf("Enter new patient name: ");
+            fgets(patients[i].name, NAME_LENGTH, stdin);
+            patients[i].name[strcspn(patients[i].name, "\n")] = '\0'; // Remove newline
+
+            printf("Enter new age: ");
+            scanf("%d", &patients[i].age);
+            getchar();  // Clear newline character
+
+            printf("Enter new gender (M/F): ");
+            scanf("%c", &patients[i].gender);
+            getchar();  // Clear newline character
+
+            printf("Enter new disease: ");
+            fgets(patients[i].disease, NAME_LENGTH, stdin);
+            patients[i].disease[strcspn(patients[i].disease, "\n")] = '\0'; // Remove newline
+
+            printf("Enter new contact number: ");
+            fgets(patients[i].contact, 15, stdin);
+            patients[i].contact[strcspn(patients[i].contact, "\n")] = '\0'; // Remove newline
+
+            printf("Patient details updated successfully.\n");
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Patient ID not found.\n");
+    }
+}
+
+void deletePatient(Patient patients[], int *count) {
+    int patient_id, found = 0;
+
+    printf("Enter patient ID to delete: ");
+    scanf("%d", &patient_id);
+    getchar();  // Clear newline character from input buffer
+
+    for (int i = 0; i < *count; i++) {
+        if (patients[i].patient_id == patient_id) {
+            found = 1;
+            // Shift the remaining patients
+            for (int j = i; j < *count - 1; j++) {
+                patients[j] = patients[j + 1];
+            }
+            (*count)--; // Decrease patient count
+            printf("Patient deleted successfully.\n");
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Patient ID not found.\n");
+    }
+}
